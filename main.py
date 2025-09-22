@@ -15,7 +15,7 @@ app= FastAPI()
 
 
 async def run():
-    con = await asyncpg.connect("postgresql://neondb_owner:npg_eQjG4g1aoZWc@ep-super-union-a1e97ig3-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+    con = await asyncpg.connect(DB_URL)
     try:
         result = await con.fetchrow(
         'SELECT * FROM test ')
@@ -57,7 +57,7 @@ async def tally_webhook(request:Request):
     except:
         print("BAD tally connection") #add more exception handling later
     try:
-        con = await asyncpg.connect("postgresql://neondb_owner:npg_eQjG4g1aoZWc@ep-super-union-a1e97ig3-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+        con = await asyncpg.connect(DB_URL)
         await con.execute(" INSERT INTO participants(email, first_name,last_name,school) VALUES($1, $2, $3, $4)", email, first_name, last_name, school)
     
         await con.close()
@@ -104,7 +104,7 @@ async def tally_score_webhook(request:Request):
         print("tally connection bad") #add more exception handling later
     
     try:
-        con = await asyncpg.connect("postgresql://neondb_owner:npg_eQjG4g1aoZWc@ep-super-union-a1e97ig3-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+        con = await asyncpg.connect(DB_URL)
         #await con.execute('''
         #INSERT INTO participant_scores(participant_email,source_of_score,date_of_scoring,skill_code,awareness_score,competence_score,buy_in_score) VALUES($1,$2,$3,$4,$5,$6,$7)
         #''', email,source,score_date,skill_code,str(awareness_score),str(competence_score),str(buy_in_score))
