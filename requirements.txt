@@ -1,0 +1,8 @@
+fastapi
+pydantic==2.8.0
+uvicorn
+sqlmodel
+asyncpg
+sqlalchemy
+psycopg2
+cloud-sql-python-connector[asyncpg]
