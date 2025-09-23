@@ -42,7 +42,7 @@ async def run():
 async def test_connection(request:Request):
     return {"status":"running"}
 
-@app.post("/testpg")
+@app.get("/testpg")
 async def test_pg_connect(request:Request):
     await run()
     return {"status":"ok"}
