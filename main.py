@@ -35,7 +35,7 @@ async def run():
     await con.close()
 
 
-@app.post("/")
+@app.get("/")
 async def test_pg_connect(request:Request):
     await run()
 
