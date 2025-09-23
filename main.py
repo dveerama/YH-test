@@ -15,30 +15,37 @@ app= FastAPI()
 
 
 async def run():
-    con = await asyncpg.connect(DB_URL)
     try:
-        result = await con.fetchrow(
-        'SELECT * FROM test ')
-        print(result)
-    except:
-        print("fetchrow error")
-    
-    try:
-        random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(5,20)))
-        await con.execute('''
-        INSERT INTO test(test_timestamp,random_int,random_string) VALUES($1,$2,$3)
-        ''', str(datetime.datetime.now()),random.randint(0,1000000),random_string)
-    except:
-        print("insert into error")
+        con = await asyncpg.connect(DB_URL)
+        try:
+            result = await con.fetchrow(
+            'SELECT * FROM test ')
+            print(result)
+        except:
+            print("fetchrow error")
+            return {"message":"fetchrow error"}
         
-    
-    await con.close()
-
+        try:
+            random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(5,20)))
+            await con.execute('''
+            INSERT INTO test(test_timestamp,random_int,random_string) VALUES($1,$2,$3)
+            ''', str(datetime.datetime.now()),random.randint(0,1000000),random_string)
+        except:
+            print("insert into error")
+            return {"message":"insert into error"}
+        
+        await con.close()
+    except Exception as e:
+        return {"error":str(e)}
 
 @app.get("/")
+async def test_connection(request:Request):
+    return {"status":"running"}
+
+@app.post("/testpg")
 async def test_pg_connect(request:Request):
     await run()
-
+    return {"status":"ok"}
 
     
 @app.post("/participants")
@@ -55,7 +62,8 @@ async def tally_webhook(request:Request):
     
         
     except:
-        print("BAD tally connection") #add more exception handling later
+        print("BAD tally connection") 
+        return {"message":"tally issue"}
     try:
         con = await asyncpg.connect(DB_URL)
         await con.execute(" INSERT INTO participants(email, first_name,last_name,school) VALUES($1, $2, $3, $4)", email, first_name, last_name, school)
@@ -64,6 +72,7 @@ async def tally_webhook(request:Request):
         return {"status": "success"}
     except:
         print("BAD pg connection") #add more exception handling later
+        return {"message":"PG Connection issue"}
         
 @app.post("/participant-score")
 async def tally_score_webhook(request:Request):
